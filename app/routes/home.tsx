@@ -1,6 +1,8 @@
+import React from "react";
 import type { Route } from "./+types/home";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
+import Modal from "../components/Modal";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -105,59 +107,102 @@ const works = [
 const editorPicks = works.filter(work => work.editorPick);
 
 function WorkCard({ work }: { work: typeof works[0] }) {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      viewport={{ once: true }}
-      className="group relative overflow-hidden rounded-lg bg-gray-800"
-    >
-      <div className={`relative ${work.aspectRatio === 'portrait' ? 'aspect-[3/4]' : work.aspectRatio === 'landscape' ? 'aspect-[4/3]' : 'aspect-square'}`}>
-        {work.type === 'image' ? (
-          <img 
-            src={work.url} 
-            alt={work.title} 
-            loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-        ) : (
-          <div className="relative w-full h-full">
-            <video 
+    <>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        viewport={{ once: true }}
+        className="group relative overflow-hidden rounded-lg bg-gray-800 cursor-pointer"
+        onClick={() => setIsModalOpen(true)}
+      >
+        <div className={`relative ${work.aspectRatio === 'portrait' ? 'aspect-[3/4]' : work.aspectRatio === 'landscape' ? 'aspect-[4/3]' : 'aspect-square'}`}>
+          {work.type === 'image' ? (
+            <img 
               src={work.url} 
-              poster={work.url.replace('.mp4', '.jpg')}
+              alt={work.title} 
+              loading="lazy"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              muted
-              loop
-              playsInline
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
-              <i className="fas fa-play-circle text-4xl text-white"></i>
+          ) : (
+            <div className="relative w-full h-full">
+              <video 
+                src={work.url} 
+                poster={work.url.replace('.mp4', '.jpg')}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                muted
+                loop
+                playsInline
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+                <i className="fas fa-play-circle text-4xl text-white"></i>
+              </div>
+            </div>
+          )}
+          {/* 编辑精选标签 */}
+          {work.editorPick && (
+            <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-medium px-2 py-1 rounded-full z-10">
+              编辑精选
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+            <h3 className="text-white font-semibold text-lg">{work.title}</h3>
+            <p className="text-gray-300 text-sm mt-1">{work.author}</p>
+            <div className="flex items-center gap-4 mt-2 text-gray-300 text-sm">
+              <span className="flex items-center gap-1">
+                <i className="fas fa-heart"></i>
+                {work.likes}
+              </span>
+              <span className="flex items-center gap-1">
+                <i className="fas fa-eye"></i>
+                {work.views}
+              </span>
             </div>
           </div>
-        )}
-        {/* 编辑精选标签 */}
-        {work.editorPick && (
-          <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-medium px-2 py-1 rounded-full z-10">
-            编辑精选
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-          <h3 className="text-white font-semibold text-lg">{work.title}</h3>
-          <p className="text-gray-300 text-sm mt-1">{work.author}</p>
-          <div className="flex items-center gap-4 mt-2 text-gray-300 text-sm">
-            <span className="flex items-center gap-1">
-              <i className="fas fa-heart"></i>
-              {work.likes}
-            </span>
-            <span className="flex items-center gap-1">
-              <i className="fas fa-eye"></i>
-              {work.views}
-            </span>
-          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+
+      {/* 预览模态框 */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        content={
+          <div className="max-w-4xl max-h-[90vh] overflow-hidden">
+            {work.type === 'image' ? (
+              <img 
+                src={work.url} 
+                alt={work.title} 
+                className="w-full h-auto max-h-[80vh] object-contain"
+              />
+            ) : (
+              <video 
+                src={work.url} 
+                className="w-full h-auto max-h-[80vh] object-contain"
+                controls
+                autoPlay
+              />
+            )}
+            <div className="mt-4 text-white">
+              <h3 className="text-2xl font-bold">{work.title}</h3>
+              <p className="text-gray-300 mt-1">{work.author}</p>
+              <div className="flex items-center gap-4 mt-2 text-gray-300">
+                <span className="flex items-center gap-1">
+                  <i className="fas fa-heart"></i>
+                  {work.likes}
+                </span>
+                <span className="flex items-center gap-1">
+                  <i className="fas fa-eye"></i>
+                  {work.views}
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      />
+    </>
   );
 }
 

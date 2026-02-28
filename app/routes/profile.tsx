@@ -1,6 +1,7 @@
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
 import type { Route } from "./+types/profile";
+import Modal from "../components/Modal";
 
 export function meta({}: Route.MetaArgs) {
   return [

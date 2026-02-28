@@ -82,6 +82,16 @@ Make sure to deploy the output of `npm run build`
 
 This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
 
+# 网站详情
+
+![首页截图](public/screenshots/index.jpeg)
+![发现页截图](public/screenshots/discover.jpeg)
+![编辑精选页截图](public/screenshots/editor-picks.jpeg)
+![上传页截图](public/screenshots/upload.jpeg)
+![登录页截图](public/screenshots/login.jpeg)
+![注册页截图](public/screenshots/register.jpeg)
+![个人页截图](public/screenshots/profile.jpeg)
+
 ---
 
 Built with ❤️ using React Router.
